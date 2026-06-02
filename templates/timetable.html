@@ -3,28 +3,35 @@
     <title>{% block title %}timetable html{% endblock %}</title>
 </head>
 <body>
-    {% block header%}Welcome to timetable{% endblock %}
+    {% block header%}Welcome to {{ city }} timetable{% endblock %}
 
     {% block content %}
+
+    {% if role == "Admin" %}
+        <a href="/admin">You are in admin mode, go to admin page?</a>
+    {% elif role == "User" %}
+        <p>welcome</p>
+    {% else %}
+        <a href="/login">go to login page</a>
+    {% endif %}
+
     <div class="container text-center">
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
-                    <h2>Time table</h2>
+                    <h2>Timetable</h2>
                 </div>
                 <table class="table table-light">
                     <tr>
-                        <th>Bus</th>
+                        <th>Transport</th>
                         <th>Time</th>
                     </tr>
-                    <tr>
-                        <th>1</th>
-                        <th>15:00</th>
-                    </tr>
-                    <tr>
-                        <th>2</th>
-                        <th>16:00</th>
-                    </tr>
+                    {% for transport, time in timetable %}
+                        <tr>
+                            <th>{{ transport }}</th>
+                            <th>{{ time }}</th>
+                        </tr>
+                    {% endfor %}
                 </table>
             </div>
         </div>
