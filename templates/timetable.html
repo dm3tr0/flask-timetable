@@ -26,10 +26,10 @@
                         <th>Transport</th>
                         <th>Time</th>
                     </tr>
-                    {% for transport, time in timetable %}
+                    {% for item in timetable %}
                         <tr>
-                            <th>{{ transport }}</th>
-                            <th>{{ time }}</th>
+                            <th>{{ item.transport }}</th>
+                            <th>{{ item.time }}</th>
                         </tr>
                     {% endfor %}
                 </table>
