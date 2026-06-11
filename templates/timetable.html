@@ -6,15 +6,6 @@
     {% block header%}Welcome to {{ city }} timetable{% endblock %}
 
     {% block content %}
-
-    {% if role == "Admin" %}
-        <a href="/admin">You are in admin mode, go to admin page?</a>
-    {% elif role == "User" %}
-        <p>welcome</p>
-    {% else %}
-        <a href="/login">go to login page</a>
-    {% endif %}
-
     <div class="container text-center">
         <div class="card">
             <div class="card-body">
