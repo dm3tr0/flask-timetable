@@ -1,30 +1,39 @@
 from flask import Flask, redirect, render_template, request, jsonify, url_for, g
-import sqlite3
+import psycopg2 # type: ignore
 
 app = Flask(__name__)
 
-DATABASE = "timetable.db"
+DATABASE_CONFIG = {
+    "dbname": "timetable",
+    "user": "postgres",
+    "password": "dima2902",
+    "host": "localhost",
+    "port": "5432"
+}
 
 # Creates table when app starts
 def init_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.execute('''
+    conn = psycopg2.connect(**DATABASE_CONFIG)
+    cursor = conn.cursor()
+
+    cursor.execute('''
                 CREATE TABLE IF NOT EXISTS timetable (
-	            id INTEGER PRIMARY KEY AUTOINCREMENT,
+	            id SERIAL PRIMARY KEY,
 	            transport TEXT NOT NULL,
   	            time TEXT NOT NULL,
   	            city TEXT
                 );
                 '''
             )
+    
     conn.commit()
+    cursor.close()
     conn.close()
 
 # Connects to database
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(DATABASE)
-        g.db.row_factory = sqlite3.Row
+        g.db = psycopg2.connect(**DATABASE_CONFIG)
     return g.db
 
 # Closes database connection
@@ -42,12 +51,14 @@ def main():
 @app.route("/timetable/<city>")
 def timetable(city):
     db = get_db()
-    rows = db.execute(f"SELECT * FROM timetable WHERE city='{city}';").fetchall()
-    db_items = [dict(row) for row in rows]
+    cursor = db.cursor()
+
+    cursor.execute(f"SELECT * FROM timetable WHERE city='{city}';")
+    rows = cursor.fetchall()
 
     context = {
-        'timetable': db_items,
-        'city': city,
+        'timetable': rows,
+        'city': rows[0][3],
     }
     return render_template("timetable.html", **context)
 
@@ -69,8 +80,9 @@ def add_timetable_item():
 
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("INSERT INTO timetable (transport, time, city) VALUES (?, ?, ?)", (transport, time, city))
+        cursor.execute("INSERT INTO timetable (transport, time, city) VALUES (%s, %s, %s)", (transport, time, city))
         db.commit()
+        cursor.close()
 
         return redirect(url_for("search"))
     return render_template("add.html")

@@ -19,8 +19,8 @@
                     </tr>
                     {% for item in timetable %}
                         <tr>
-                            <th>{{ item.transport }}</th>
-                            <th>{{ item.time }}</th>
+                            <th>{{ item[1] }}</th>
+                            <th>{{ item[2] }}</th>
                         </tr>
                     {% endfor %}
                 </table>
